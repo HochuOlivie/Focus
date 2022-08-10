@@ -1,0 +1,6 @@
+CHOOSE_TIME_ACTION = "choose_time_action"
+CHOOSE_TIME_CATEGORY = "choose_time_category"
+START_RECORDING = "start_recording"
+ENTER_TIME = "enter_time"
+STOP_RECORD = "stop_recording"
+MORE_ACTION = "more_action"
