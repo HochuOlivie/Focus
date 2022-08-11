@@ -38,7 +38,9 @@ def agregate_days_by_week(user, data, actions, date_from, date_to):
     res["total_points"] = 0
     res["days"] = {}
 
-    for day in range(date_from.weekday(), date_to.weekday() + 1):
+    total_days = (date_to - date_from).days + 1
+
+    for day in range(total_days):
         res["days"][day] = {"hours": 0, "points": 0}
         for record in data[user]["records"]:
             if (

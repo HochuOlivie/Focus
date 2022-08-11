@@ -8,6 +8,7 @@ from utils import get_user
 from datetime import datetime
 from utils import week_days, get_datetime
 from utils import truncate
+from utils import get_user, get_hour_string, week_days
 
 
 async def choose_category(callback_query: types.CallbackQuery, state: FSMContext):
@@ -35,9 +36,8 @@ async def start_recording_fork(
             data[user]["log"]["category"] = callback_query.data.split("_")[-1]
 
     async with state.proxy() as data:
-        date = datetime.strptime(data[user]["log"]["date"], "%d.%m.%Y")
-        now = datetime.now()
-        if date.month != now.month or date.day != now.day:
+        date_str = data[user]["log"]["date"]
+        if date_str is not None:
             await enter_time(callback_query, state, skip_category)
             return
 
@@ -67,16 +67,14 @@ async def start_recording(
 
 
 async def stop_recording(callback_query: types.CallbackQuery, state: FSMContext):
-    week_days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
     async with state.proxy() as data:
         user = get_user(callback_query)
         date = get_datetime(data[user]["log"]["start_recording"])
         now = datetime.now()
         total_seconds = (now - date).total_seconds()
         hours = total_seconds / 3600
-        hours = truncate(hours, 1)
-        if hours < 0.1:
-            hours = "<0.1"
+        hours_string = get_hour_string(hours, 1, 1)
+
         action = data[user]["log"]["action"]
         category = (
             data[user]["log"]["category"] if "category" in data[user]["log"] else None
@@ -91,7 +89,7 @@ async def stop_recording(callback_query: types.CallbackQuery, state: FSMContext)
             }
         )
         msg = (
-            f"✅ Record {action} {hours}h"
+            f"✅ Record {action} {hours_string}"
             f' added ({week_days[date.weekday()]}, {now.strftime("%d.%m")})'
         )
 
@@ -107,11 +105,13 @@ async def stop_recording(callback_query: types.CallbackQuery, state: FSMContext)
 async def more_action(callback_query: types.CallbackQuery, state: FSMContext):
     user = get_user(callback_query)
     msg = "Choose action🏄‍♂"
-    async with state.proxy() as data:
-        await keyboards.get_actions_keyboard(user, state)
-        await callback_query.message.edit_text(
-            msg, reply_markup=await keyboards.get_actions_keyboard(user, state),
-        )
+    if callback_query.data == cbc.MORE_ACTION:
+        async with state.proxy() as data:
+            data[user]["log"]["date"] = None
+    await keyboards.get_actions_keyboard(user, state)
+    await callback_query.message.edit_text(
+        msg, reply_markup=await keyboards.get_actions_keyboard(user, state),
+    )
 
 
 def register_callbacks(fbot, dp: Dispatcher):
@@ -128,4 +128,6 @@ def register_callbacks(fbot, dp: Dispatcher):
         start_recording, text=cbc.START_RECORDING, state="*"
     )
     dp.register_callback_query_handler(stop_recording, text=cbc.STOP_RECORD, state="*")
+
     dp.register_callback_query_handler(more_action, text=cbc.MORE_ACTION, state="*")
+    dp.register_callback_query_handler(more_action, text=cbc.MORE_ACTION_PAST, state="*")
