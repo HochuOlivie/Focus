@@ -11,6 +11,9 @@ from utils import truncate
 from utils import get_user, get_hour_string, week_days
 
 
+bot = None
+
+
 async def choose_category(callback_query: types.CallbackQuery, state: FSMContext):
     msg = "Choose category🚦"
     user = get_user(callback_query)
@@ -109,12 +112,13 @@ async def more_action(callback_query: types.CallbackQuery, state: FSMContext):
         async with state.proxy() as data:
             data[user]["log"]["date"] = None
     await keyboards.get_actions_keyboard(user, state)
-    await callback_query.message.edit_text(
-        msg, reply_markup=await keyboards.get_actions_keyboard(user, state),
-    )
+    await callback_query.message.edit_text(text=callback_query.message.text)
+    await bot.send_message(user, text=msg, reply_markup = await keyboards.get_actions_keyboard(user, state))
 
 
 def register_callbacks(fbot, dp: Dispatcher):
+    global bot
+    bot = fbot
     dp.register_callback_query_handler(
         choose_category, lambda c: c.data.startswith(cbc.CHOOSE_TIME_ACTION), state="*"
     )
@@ -130,4 +134,6 @@ def register_callbacks(fbot, dp: Dispatcher):
     dp.register_callback_query_handler(stop_recording, text=cbc.STOP_RECORD, state="*")
 
     dp.register_callback_query_handler(more_action, text=cbc.MORE_ACTION, state="*")
-    dp.register_callback_query_handler(more_action, text=cbc.MORE_ACTION_PAST, state="*")
+    dp.register_callback_query_handler(
+        more_action, text=cbc.MORE_ACTION_PAST, state="*"
+    )

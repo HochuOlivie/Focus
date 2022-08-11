@@ -79,7 +79,7 @@ async def today_by_actions(callback_query: types.CallbackQuery, state: FSMContex
 async def week_by_actions(callback_query: types.CallbackQuery, state: FSMContext):
     user = get_user(callback_query)
     date_to = datetime.now().date()
-    date_from = date_to - timedelta(days=8)
+    date_from = date_to - timedelta(days=7)
 
     async with state.proxy() as data:
         user_has_cats = bool(data[user]["categories"])
@@ -195,7 +195,7 @@ async def all_time_by_actions(callback_query: types.CallbackQuery, state: FSMCon
 async def week_by_day(callback_query: types.CallbackQuery, state: FSMContext):
     user = get_user(callback_query)
     date_to = datetime.now().date()
-    date_from = date_to - timedelta(days=8)
+    date_from = date_to - timedelta(days=7)
 
     async with state.proxy() as data:
         user_has_cats = bool(data[user]["categories"])

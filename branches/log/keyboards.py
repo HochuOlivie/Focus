@@ -25,8 +25,14 @@ def get_log_more_action_keyboard():
 
 def get_log_more_action_keyboard_double(date_str):
     kb = InlineKeyboardMarkup()
-    kb.add(InlineKeyboardButton(f"Log one more action [{date_str}]", callback_data=cbc.MORE_ACTION_PAST))
-    kb.add(InlineKeyboardButton("Log one more action today", callback_data=cbc.MORE_ACTION))
+    kb.add(
+        InlineKeyboardButton(
+            f"Log one more action [{date_str}]", callback_data=cbc.MORE_ACTION_PAST
+        )
+    )
+    kb.add(
+        InlineKeyboardButton("Log one more action today", callback_data=cbc.MORE_ACTION)
+    )
     return kb
 
 

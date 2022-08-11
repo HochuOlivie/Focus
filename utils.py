@@ -32,4 +32,5 @@ def get_hour_string(hours, decimal_places, little_decimal_places):
     if decimal_places == 1:
         return f"{truncate(hours, 1)}h"
 
+
 week_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

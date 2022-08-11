@@ -25,16 +25,14 @@ class Log:
             if len(message.text.split()) == 2:
                 date = message.text.split()[1].strip()
                 try:
-                    datetime.strptime(date, '%d.%m')
+                    datetime.strptime(date, "%d.%m")
                 except:
                     await self.bot.send_message(
                         message.from_user.id,
                         'Enter correct date in format "day.month" (example: 12.06)',
                     )
                     return
-                data[user]["log"]["date"] = (
-                    date + f".{datetime.now().year}"
-                )
+                data[user]["log"]["date"] = date + f".{datetime.now().year}"
             else:
                 data[user]["log"]["date"] = None
             if data[user]["actions"]:
@@ -107,9 +105,7 @@ class Log:
         if date_str is None:
             kb = keyboards.get_log_more_action_keyboard()
         else:
-            kb = keyboards.get_log_more_action_keyboard_double(date.strftime('%d.%m'))
+            kb = keyboards.get_log_more_action_keyboard_double(date.strftime("%d.%m"))
         await self.bot.send_message(
-            message.from_user.id,
-            msg,
-            reply_markup=kb,
+            message.from_user.id, msg, reply_markup=kb,
         )
